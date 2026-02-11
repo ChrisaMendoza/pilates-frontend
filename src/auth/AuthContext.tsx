@@ -21,7 +21,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    useEffect(() => { refresh(); }, []);
+    useEffect(() => {
+        refresh().catch(() => setLoading(false));
+    }, []);
 
     return <Ctx.Provider value={{ account, loading, refresh, signOut: () => { logout(); setAccount(null); } }}>{children}</Ctx.Provider>;
 }

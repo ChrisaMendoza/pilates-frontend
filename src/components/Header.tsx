@@ -1,25 +1,77 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import styles from './Header.module.css';
 
 export default function Header() {
     const { account, signOut } = useAuth();
+    const location = useLocation();
+
+    const isActive = (path: string) => location.pathname === path;
 
     return (
-        <header style={{ display: 'flex', gap: 20, padding: 20 }}>
-            <Link to="/">Accueil</Link>
-            <Link to="/planning">Planning et réservations</Link>
-            <Link to="/pricing">Tarifs et abonnement</Link>
-            <Link to="/more">A propos de nous</Link>
+        <header className={styles.header}>
+            <div className={styles.headerContainer}>
+                <Link to="/" className={styles.logo}>
+                    <img
+                        src="/src/assets/core-logo.png"
+                        alt="CORE"
+                        className={styles.logoIcon}
+                    />
+                    <span className={styles.logoText}>CORE</span>
+                </Link>
 
-            <div style={{ marginLeft: 'auto' }}>
-                {account ? (
-                    <>
-                        <Link to="/dashboard">Mon compte</Link>
-                        <button onClick={signOut}>Déconnexion</button>
-                    </>
-                ) : (
-                    <Link to="/login">Se connecter</Link>
-                )}
+                <nav className={styles.nav}>
+                    <Link
+                        to="/"
+                        className={`${styles.navLink} ${isActive('/') ? styles.active : ''}`}
+                    >
+                        Accueil
+                    </Link>
+                    <Link
+                        to="/planning"
+                        className={`${styles.navLink} ${isActive('/planning') ? styles.active : ''}`}
+                    >
+                        Planning et réservation
+                    </Link>
+                    <Link
+                        to="/pricing"
+                        className={`${styles.navLink} ${isActive('/pricing') ? styles.active : ''}`}
+                    >
+                        Tarifs et abonnement
+                    </Link>
+                    <Link
+                        to="/about"
+                        className={`${styles.navLink} ${isActive('/about') ? styles.active : ''}`}
+                    >
+                        À propos de nous
+                    </Link>
+                </nav>
+
+                <div className={styles.actions}>
+                    {account ? (
+                        <>
+                            <Link to="/dashboard" className={styles.btnOutline}>
+                                Se connecter
+                            </Link>
+                            <button onClick={signOut} className={styles.btnSolid}>
+                                Déconnexion
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/register" className={styles.btnOutline}>
+                                S'inscrire
+                            </Link>
+                            <Link to="/login" className={styles.btnSolid}>
+                                Connexion
+                            </Link>
+                        </>
+                    )}
+                </div>
+
+                <button className={styles.mobileMenuButton} aria-label="Menu">
+                    <div className={styles.mobileMenuIcon}></div>
+                </button>
             </div>
         </header>
     );
