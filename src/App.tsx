@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import MainLayout from './layouts/MainLayout';
 import PricingPage from './pages/PricingPage';
 import PaymentPage from './pages/PaymentPage';
+import PlanningPage from './pages/PlanningPage';
 
 export default function App() {
 
@@ -18,6 +19,7 @@ export default function App() {
                     <Route path="/register" element={<MainLayout><RegisterPage /></MainLayout>} />
                     <Route path="/pricing" element={<MainLayout><PricingPage /></MainLayout>} />
                     <Route path="/payment" element={<MainLayout><PaymentPage /></MainLayout>} />
+                    <Route path="/planning" element={<MainLayout><PlanningPage /></MainLayout>} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </BrowserRouter>

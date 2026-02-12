@@ -21,3 +21,14 @@ export async function getAccount() {
     const res = await http.get('/account');
     return res.data;
 }
+
+export async function register(userData: any) {
+    return await http.post('/register', {
+        login: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        password: userData.password,
+        langKey: 'fr'
+    });
+}
