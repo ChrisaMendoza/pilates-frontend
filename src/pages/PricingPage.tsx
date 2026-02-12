@@ -1,6 +1,8 @@
+import { Link } from 'react-router-dom';
 import styles from './PricingPage.module.css';
 
 type Plan = {
+    id: string;
     name: string;
     price: string;
     cadence: string;
@@ -12,6 +14,7 @@ type Plan = {
 
 const plans: Plan[] = [
     {
+        id: 'decouverte',
         name: 'Découverte',
         price: '59€',
         cadence: '/4 séances',
@@ -24,6 +27,7 @@ const plans: Plan[] = [
         cta: 'Choisir Découverte',
     },
     {
+        id: 'essentiel',
         name: 'Essentiel',
         price: '129€',
         cadence: '/mois',
@@ -37,6 +41,7 @@ const plans: Plan[] = [
         popular: true,
     },
     {
+        id: 'illimite',
         name: 'Illimité',
         price: '189€',
         cadence: '/mois',
@@ -75,6 +80,9 @@ export default function PricingPage() {
                     Choisissez la formule qui correspond à votre rythme et profitez d’un coaching premium
                     au cœur de Paris.
                 </p>
+                <Link to="/" className={styles.backHomeButton}>
+                    ← Revenir à l’accueil
+                </Link>
             </section>
 
             <section className={styles.plansSection}>
@@ -90,7 +98,7 @@ export default function PricingPage() {
                                     <li key={feature}>{feature}</li>
                                 ))}
                             </ul>
-                            <button className={styles.ctaButton}>{plan.cta}</button>
+                            <Link to={`/payment?plan=${plan.id}`} className={styles.ctaButton}>{plan.cta}</Link>
                         </article>
                     ))}
                 </div>
