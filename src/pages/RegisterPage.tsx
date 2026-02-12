@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { login, register } from '../api/auth';
+import { useAuth } from '../auth/AuthContext';
 import styles from './RegisterPage.module.css';
 
 type RegisterFormData = {
@@ -33,6 +35,7 @@ function getErrorMessage(error: unknown): string {
 
 export default function RegisterPage() {
     const navigate = useNavigate();
+    const { refresh } = useAuth();
     const [formData, setFormData] = useState<RegisterFormData>(initialFormData);
     const [error, setError] = useState<string | null>(null);
 
@@ -54,8 +57,9 @@ export default function RegisterPage() {
         }
 
         try {
-            console.log('Registering with:', formData);
-            alert('Inscription réussie !');
+            await register(formData);
+            await login(formData.email, formData.password);
+            await refresh();
             navigate('/profile', { state: { source: 'register' } });
         } catch (submitError: unknown) {
             console.error('REGISTER ERROR:', submitError);

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import styles from './ProfilePage.module.css';
 
@@ -30,17 +30,13 @@ const pastBookings = [
 ];
 
 export default function ProfilePage() {
-    const location = useLocation();
     const { account } = useAuth();
-    const source = location.state?.source === 'register' ? 'register' : 'login';
-
-    const greeting = source === 'register' ? 'Bienvenue' : 'Ravis de vous revoir';
 
     const [selectedAvatar, setSelectedAvatar] = useState(avatars[0]);
     const [isEditing, setIsEditing] = useState(false);
     const [profileData, setProfileData] = useState<ProfileData>({
-        firstName: '',
-        lastName: '',
+        firstName: account?.firstName ?? '',
+        lastName: account?.lastName ?? '',
         email: account?.login ?? '',
         phone: '',
         address: '',
@@ -49,8 +45,11 @@ export default function ProfilePage() {
 
     const fullName = useMemo(() => {
         const composed = `${profileData.firstName} ${profileData.lastName}`.trim();
-        return composed || account?.login || 'Membre CORE';
-    }, [account?.login, profileData.firstName, profileData.lastName]);
+        const accountName = `${account?.firstName ?? ''} ${account?.lastName ?? ''}`.trim();
+        return composed || accountName || account?.login || 'Membre CORE';
+    }, [account?.firstName, account?.lastName, account?.login, profileData.firstName, profileData.lastName]);
+
+    const firstName = profileData.firstName || account?.firstName || account?.login?.split('@')[0] || 'Membre';
 
     const onChange = (field: keyof ProfileData, value: string) => {
         setProfileData(prev => ({ ...prev, [field]: value }));
@@ -76,7 +75,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                    <p className={styles.greeting}>{greeting}</p>
+                    <p className={styles.greeting}>{`Bienvenue, ${firstName}`}</p>
                     <h1 className={styles.name}>{fullName}</h1>
                     <p className={styles.subtle}>Votre espace profil CORE</p>
                 </div>
