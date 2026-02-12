@@ -44,8 +44,8 @@ export default function Header() {
                 <div className={styles.actions}>
                     {account ? (
                         <>
-                            <Link to="/dashboard" className={styles.btnOutline}>
-                                Se connecter
+                            <Link to="/profile" className={styles.btnOutline}>
+                                Mon compte
                             </Link>
                             <button onClick={signOut} className={styles.btnSolid}>
                                 Déconnexion
