@@ -1,4 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import styles from './PaymentPage.module.css';
 
 type PlanContent = {
@@ -42,6 +43,7 @@ const planMapping: Record<string, PlanContent> = {
 
 export default function PaymentPage() {
     const [searchParams] = useSearchParams();
+    const { account } = useAuth();
     const selectedPlan = searchParams.get('plan') ?? 'pack-20';
     const plan = planMapping[selectedPlan] ?? planMapping['pack-20'];
 
@@ -58,22 +60,53 @@ export default function PaymentPage() {
                 </div>
 
                 <form className={styles.form}>
+                    {!account && (
+                        <>
+                            <h3 className={styles.formSectionTitle}>Informations personnelles</h3>
+                            <div className={styles.row}>
+                                <label>
+                                    Prénom
+                                    <input type="text" placeholder="Ex: Marie" required />
+                                </label>
+                                <label>
+                                    Nom
+                                    <input type="text" placeholder="Ex: Dupont" required />
+                                </label>
+                            </div>
+                            <label>
+                                Email
+                                <input type="email" placeholder="Ex: marie.dupont@email.com" required />
+                            </label>
+                            <label>
+                                Numéro de téléphone
+                                <input type="tel" placeholder="Ex: 06 12 34 56 78" required />
+                            </label>
+                        </>
+                    )}
+
+                    {account && (
+                        <p className={styles.connectedNotice}>
+                            Vous êtes connecté(e), vos informations personnelles sont déjà enregistrées.
+                        </p>
+                    )}
+
+                    <h3 className={styles.formSectionTitle}>Informations bancaires</h3>
                     <label>
                         Nom sur la carte
-                        <input type="text" placeholder="Ex: Marie Dupont" />
+                        <input type="text" placeholder="Ex: Marie Dupont" required />
                     </label>
                     <label>
                         Numéro de carte
-                        <input type="text" placeholder="1234 5678 9012 3456" />
+                        <input type="text" placeholder="1234 5678 9012 3456" required />
                     </label>
                     <div className={styles.row}>
                         <label>
                             Expiration
-                            <input type="text" placeholder="MM/AA" />
+                            <input type="text" placeholder="MM/AA" required />
                         </label>
                         <label>
                             CVC
-                            <input type="text" placeholder="123" />
+                            <input type="text" placeholder="123" required />
                         </label>
                     </div>
 
