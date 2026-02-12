@@ -8,27 +8,42 @@ type PlanContent = {
 };
 
 const planMapping: Record<string, PlanContent> = {
-    decouverte: {
-        name: 'Découverte',
-        amount: '59€',
-        subtitle: 'Pack 4 séances',
+    'pack-1': {
+        name: 'Séance à l’unité',
+        amount: '14 crédits',
+        subtitle: '1 séance · Validité 7 jours',
     },
-    essentiel: {
-        name: 'Essentiel',
-        amount: '129€',
-        subtitle: 'Abonnement mensuel',
+    'pack-10': {
+        name: 'Pack 10 séances',
+        amount: '140 crédits',
+        subtitle: '10 séances · Validité 2 mois',
     },
-    illimite: {
-        name: 'Illimité',
-        amount: '189€',
-        subtitle: 'Abonnement mensuel',
+    'pack-20': {
+        name: 'Pack 20 séances',
+        amount: '280 crédits',
+        subtitle: '20 séances · Validité 4 mois',
+    },
+    'pack-40': {
+        name: 'Pack 40 séances',
+        amount: '560 crédits',
+        subtitle: '40 séances · Validité 8 mois',
+    },
+    'abonnement-mensuel': {
+        name: 'Abonnement Mensuel',
+        amount: '120 crédits',
+        subtitle: 'Validité 30 jours',
+    },
+    'abonnement-trimestriel': {
+        name: 'Abonnement Trimestriel',
+        amount: '390 crédits',
+        subtitle: 'Validité 90 jours',
     },
 };
 
 export default function PaymentPage() {
     const [searchParams] = useSearchParams();
-    const selectedPlan = searchParams.get('plan') ?? 'essentiel';
-    const plan = planMapping[selectedPlan] ?? planMapping.essentiel;
+    const selectedPlan = searchParams.get('plan') ?? 'pack-20';
+    const plan = planMapping[selectedPlan] ?? planMapping['pack-20'];
 
     return (
         <div className={styles.page}>
