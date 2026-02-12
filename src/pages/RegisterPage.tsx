@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { register } from '../api/auth';
 import styles from './RegisterPage.module.css';
 
 export default function RegisterPage() {
@@ -15,6 +16,7 @@ export default function RegisterPage() {
         confirmPassword: ''
     });
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -31,14 +33,15 @@ export default function RegisterPage() {
         }
 
         try {
-            // Placeholder for registration logic
-            console.log("Registering with:", formData);
-            // In a real scenario, call register(formData)
+            setLoading(true);
+            await register(formData);
             alert("Inscription réussie ! Veuillez vous connecter.");
             nav('/login');
         } catch (err: any) {
             console.error("REGISTER ERROR:", err);
-            setError(err?.message || "Registration failed");
+            setError(err?.response?.data?.title || err?.message || "Registration failed");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -142,8 +145,8 @@ export default function RegisterPage() {
                     </div>
                 </div>
 
-                <button type="submit" className={styles.submitButton}>
-                    S'inscrire
+                <button type="submit" className={styles.submitButton} disabled={loading}>
+                    {loading ? 'Inscription...' : 'S\'inscrire'}
                 </button>
 
                 {error && <p className={styles.error}>{error}</p>}
