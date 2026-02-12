@@ -39,12 +39,6 @@ export default function Header() {
                     >
                         Tarifs et abonnement
                     </Link>
-                    <Link
-                        to="/about"
-                        className={`${styles.navLink} ${isActive('/about') ? styles.active : ''}`}
-                    >
-                        À propos de nous
-                    </Link>
                 </nav>
 
                 <div className={styles.actions}>
