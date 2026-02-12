@@ -81,7 +81,7 @@ export default function HomePage() {
                             </h4>
                             <p className={styles.formatDescription}>
                                 — pour tous les niveaux, un entraînement complet qui active tout le corps
-                                (disponible en français, en chinois, et bientôt en anglais...)
+                                (disponible en français et en anglais)
                             </p>
                         </div>
                         <div className={styles.formatItem}>
