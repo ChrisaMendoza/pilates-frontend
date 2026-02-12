@@ -11,7 +11,6 @@ const navItems: NavItem[] = [
     { to: '/', label: 'Accueil' },
     { to: '/planning', label: 'Planning et réservation' },
     { to: '/pricing', label: 'Tarifs et abonnement' },
-    { to: '/about', label: 'À propos de nous' },
 ];
 
 export default function Header() {

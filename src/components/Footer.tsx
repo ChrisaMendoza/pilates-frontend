@@ -42,8 +42,9 @@ export default function Footer() {
             </div>
 
             <div className={styles.bottomBar}>
-                <p>© {new Date().getFullYear()} by CORE STUDIO. Powered and secured by Wix</p>
+                <p>© {new Date().getFullYear()} by CORE STUDIO.</p>
             </div>
         </footer>
     );
 }
+
