@@ -1,6 +1,8 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import styles from './PlanningPage.module.css';
 import studioHero from '../assets/studio-hero.png';
+import { listEvents } from '../api/events';
+import type { Event } from '../types/models';
 
 interface Session {
     id: string;
@@ -11,13 +13,20 @@ interface Session {
     type: string;
     level: string; // 'Débutant', 'Intermédiaire', 'Avancé'
     date: string; // ISO string without time
+    isPast: boolean;
 }
 
 const INSTRUCTORS = ['Mélanie', 'Thomas', 'Sarah', 'Julie', 'Antoine'];
 const LEVELS = ['Débutant', 'Intermédiaire', 'Avancé'];
 
-// Generate extensive mock data for 14 days
-const generateMockData = (): Session[] => {
+const LEVEL_DESCRIPTIONS: Record<string, string> = {
+    'Débutant': 'Idéal pour découvrir le Pilates Reformer. Apprenez les bases, la respiration et les bons alignements dans un rythme progressif et accessible à tous.',
+    'Intermédiaire': 'Un cours dynamique pour renforcer en profondeur et améliorer la coordination. Enchaînements fluides et travail de stabilité pour progresser en confiance.',
+    'Avancé': 'Séance intensive axée sur le contrôle, la précision et la puissance. Enchaînements techniques et travail approfondi du centre pour les pratiquants expérimentés.'
+};
+
+// Mock data generator for fallback
+const generateFallbackMockData = (): Session[] => {
     const sessions: Session[] = [];
     const baseDate = new Date();
 
@@ -26,7 +35,6 @@ const generateMockData = (): Session[] => {
         currentDate.setDate(baseDate.getDate() + i);
         const dateStr = currentDate.toISOString().split('T')[0];
 
-        // Add 3-5 sessions per day
         const sessionCount = 3 + (i % 3);
         for (let j = 0; j < sessionCount; j++) {
             const hour = 9 + (j * 2);
@@ -34,32 +42,76 @@ const generateMockData = (): Session[] => {
             const instructor = INSTRUCTORS[(i + j) % INSTRUCTORS.length];
             const level = LEVELS[(i + j) % LEVELS.length];
 
+            const sessionStartTime = new Date(currentDate);
+            sessionStartTime.setHours(hour, 0, 0, 0);
+
             sessions.push({
-                id: `${i}-${j}`,
+                id: `mock-${i}-${j}`,
                 time,
                 duration: '50 min',
                 title: `Cours de pilates reformer - niveau ${level.toLowerCase()}`,
                 instructor,
                 type: 'PILATES REFORMER',
                 level,
-                date: dateStr
+                date: dateStr,
+                isPast: sessionStartTime.getTime() < baseDate.getTime()
             });
         }
     }
     return sessions;
 };
 
-const MOCK_SESSIONS = generateMockData();
-
 export default function PlanningPage() {
     const today = new Date();
+    const [sessions, setSessions] = useState<Session[]>([]);
+    const [loading, setLoading] = useState(true);
+
     const [selectedDate, setSelectedDate] = useState(today.toISOString().split('T')[0]);
     const [filterType, setFilterType] = useState('Tous');
     const [filterInstructor, setFilterInstructor] = useState('Tous');
     const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
     const [isInstructorDropdownOpen, setIsInstructorDropdownOpen] = useState(false);
+    const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
 
     const dateListRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                setLoading(true);
+                const events = await listEvents();
+
+                const transformedSessions: Session[] = events.map((event: Event) => {
+                    const startDate = new Date(event.startAt);
+                    const endDate = new Date(event.endAt);
+                    const diffMs = endDate.getTime() - startDate.getTime();
+                    const diffMins = Math.round(diffMs / 60000);
+
+                    return {
+                        id: event.id.toString(),
+                        time: startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+                        duration: `${diffMins} min`,
+                        title: `Cours de pilates reformer - niveau ${LEVELS[event.id % LEVELS.length].toLowerCase()}`,
+                        instructor: event.coachName || 'Instructeur CORE',
+                        type: 'PILATES REFORMER',
+                        level: LEVELS[event.id % LEVELS.length],
+                        date: event.startAt.split('T')[0],
+                        isPast: startDate.getTime() < new Date().getTime()
+                    };
+                });
+
+                setSessions(transformedSessions);
+            } catch (err) {
+                console.warn("Failed to fetch events from API, using fallback data", err);
+                const mockFallback = generateFallbackMockData();
+                setSessions(mockFallback);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchEvents();
+    }, []);
 
     // Generate next 14 days
     const dates = useMemo(() => {
@@ -75,9 +127,9 @@ export default function PlanningPage() {
             });
         }
         return result;
-    }, []);
+    }, [today]);
 
-    const filteredSessions = MOCK_SESSIONS.filter(s => {
+    const filteredSessions = sessions.filter(s => {
         const matchesDate = s.date === selectedDate;
         const matchesType = filterType === 'Tous' || s.level === filterType;
         const matchesInstructor = filterInstructor === 'Tous' || s.instructor === filterInstructor;
@@ -238,7 +290,9 @@ export default function PlanningPage() {
                 </div>
 
                 <div className={styles.sessionList}>
-                    {filteredSessions.length > 0 ? (
+                    {loading ? (
+                        <div style={{ padding: '2rem 0', textAlign: 'center' }}>Chargement du planning...</div>
+                    ) : filteredSessions.length > 0 ? (
                         filteredSessions.map((session) => (
                             <div key={session.id} className={styles.sessionCard}>
                                 <div className={styles.sessionTimeInfo}>
@@ -248,16 +302,29 @@ export default function PlanningPage() {
                                 <div className={styles.sessionMainInfo}>
                                     <span className={styles.sessionTitle}>{session.title}</span>
                                     <span className={styles.instructor}>{session.instructor}</span>
-                                    <span className={styles.detailsToggle}>
-                                        Afficher les détails <ChevronDown />
-                                    </span>
+                                    <button
+                                        className={`${styles.detailsToggle} ${expandedSessionId === session.id ? styles.active : ''}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setExpandedSessionId(expandedSessionId === session.id ? null : session.id);
+                                        }}
+                                    >
+                                        {expandedSessionId === session.id ? 'Masquer les détails' : 'Afficher les détails'} <ChevronDown />
+                                    </button>
+                                    {expandedSessionId === session.id && (
+                                        <div className={styles.sessionDescription}>
+                                            {LEVEL_DESCRIPTIONS[session.level] || "Cours de Pilates Reformer CORE."}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className={styles.sessionType}>
                                     {session.type}
                                 </div>
-                                <a href="#" className={styles.bookButton} onClick={(e) => e.preventDefault()}>
-                                    S'inscrire
-                                </a>
+                                {!session.isPast && (
+                                    <a href="#" className={styles.bookButton} onClick={(e) => e.preventDefault()}>
+                                        S'inscrire
+                                    </a>
+                                )}
                             </div>
                         ))
                     ) : (

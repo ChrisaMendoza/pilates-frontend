@@ -8,7 +8,7 @@ import RegisterPage from './pages/RegisterPage';
 import PricingPage from './pages/PricingPage';
 import PaymentPage from './pages/PaymentPage';
 import ProfilePage from './pages/ProfilePage';
-import EventsPage from './pages/EventsPage';
+import PlanningPage from './pages/PlanningPage';
 
 export default function App() {
     return (
@@ -21,7 +21,7 @@ export default function App() {
                     <Route path="/pricing" element={<MainLayout><PricingPage /></MainLayout>} />
                     <Route path="/payment" element={<MainLayout><PaymentPage /></MainLayout>} />
                     <Route path="/profile" element={<MainLayout><ProfilePage /></MainLayout>} />
-                    <Route path="/planning" element={<MainLayout><EventsPage /></MainLayout>} />
+                    <Route path="/planning" element={<MainLayout><PlanningPage /></MainLayout>} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </BrowserRouter>

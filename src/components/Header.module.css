@@ -26,27 +26,28 @@
     align-items: center;
     gap: var(--spacing-sm);
     text-decoration: none;
+    flex: 1;
 }
 
 .logoIcon {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
 }
 
 .logoText {
     font-family: var(--font-serif);
-    font-size: var(--text-xl);
-    font-weight: 600;
+    font-size: 1.5rem;
+    font-weight: 700;
     color: var(--color-dark);
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
 .nav {
     display: flex;
     align-items: center;
-    gap: var(--spacing-lg);
-    flex: 1;
+    gap: var(--spacing-xl);
+    flex: 2;
     justify-content: center;
 }
 
@@ -71,6 +72,8 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
+    flex: 1;
+    justify-content: flex-end;
 }
 
 .btnOutline {
