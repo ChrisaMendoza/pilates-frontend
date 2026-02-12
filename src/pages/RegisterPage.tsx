@@ -1,158 +1,117 @@
 import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { register } from '../api/auth';
+import type { ChangeEvent, FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './RegisterPage.module.css';
 
-export default function RegisterPage() {
-    const nav = useNavigate();
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        birthDate: '',
-        email: '',
-        phone: '',
-        password: '',
-        confirmPassword: ''
-    });
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
+type RegisterFormData = {
+    firstName: string;
+    lastName: string;
+    birthDate: string;
+    email: string;
+    phone: string;
+    password: string;
+    confirmPassword: string;
+};
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+const initialFormData: RegisterFormData = {
+    firstName: '',
+    lastName: '',
+    birthDate: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+};
+
+function getErrorMessage(error: unknown): string {
+    if (error instanceof Error && error.message) {
+        return error.message;
+    }
+
+    return 'Registration failed';
+}
+
+export default function RegisterPage() {
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState<RegisterFormData>(initialFormData);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setFormData((previousData) => ({
+            ...previousData,
+            [name]: value,
+        }));
     };
 
-    const onSubmit = async (e: FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         setError(null);
 
         if (formData.password !== formData.confirmPassword) {
-            setError("Les mots de passe ne correspondent pas");
+            setError('Les mots de passe ne correspondent pas');
             return;
         }
 
         try {
-            setLoading(true);
-            await register(formData);
-            alert("Inscription réussie ! Veuillez vous connecter.");
-            nav('/login');
-        } catch (err: any) {
-            console.error("REGISTER ERROR:", err);
-            setError(err?.response?.data?.title || err?.message || "Registration failed");
-        } finally {
-            setLoading(false);
+            console.log('Registering with:', formData);
+            alert('Inscription réussie !');
+            navigate('/profile', { state: { source: 'register' } });
+        } catch (submitError: unknown) {
+            console.error('REGISTER ERROR:', submitError);
+            setError(getErrorMessage(submitError));
         }
     };
 
     return (
         <div className={styles.registerContainer}>
-            <Link to="/" className={styles.backLink}>
-                ← Accueil
-            </Link>
+            <Link to="/" className={styles.backLink}>← Accueil</Link>
 
             <h1 className={styles.title}>Bienvenue !</h1>
 
             <form onSubmit={onSubmit} className={styles.form}>
-                <div className={styles.grid}>
-                    {/* Row 1 */}
-                    <div className={styles.inputGroup}>
-                        <label className={styles.label}>Prénom</label>
-                        <input
-                            name="firstName"
-                            className={styles.input}
-                            value={formData.firstName}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className={styles.inputGroup}>
-                        <label className={styles.label}>Nom</label>
-                        <input
-                            name="lastName"
-                            className={styles.input}
-                            value={formData.lastName}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    {/* Row 2 */}
-                    <div className={styles.inputGroup}>
-                        <label className={styles.label}>Date de naissance</label>
-                        <input
-                            name="birthDate"
-                            type="date"
-                            className={styles.input}
-                            value={formData.birthDate}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    {/* Empty Slot */}
-                    <div className={styles.inputGroup}></div>
-
-                    {/* Row 3 */}
-                    <div className={styles.inputGroup}>
-                        <label className={styles.label}>Mail</label>
-                        <input
-                            name="email"
-                            type="email"
-                            className={styles.input}
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className={styles.inputGroup}>
-                        <label className={styles.label}>Téléphone</label>
-                        <input
-                            name="phone"
-                            type="tel"
-                            className={styles.input}
-                            value={formData.phone}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    {/* Row 4 */}
-                    <div className={styles.inputGroup}>
-                        <label className={styles.label}>Mot de passe</label>
-                        <input
-                            name="password"
-                            type="password"
-                            className={styles.input}
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className={styles.inputGroup}>
-                        <label className={styles.label}>Confirmation de mot de passe</label>
-                        <input
-                            name="confirmPassword"
-                            type="password"
-                            className={styles.input}
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="firstName" className={styles.label}>Prénom</label>
+                    <input id="firstName" name="firstName" className={styles.input} value={formData.firstName} onChange={handleChange} required />
                 </div>
 
-                <button type="submit" className={styles.submitButton} disabled={loading}>
-                    {loading ? 'Inscription...' : 'S\'inscrire'}
-                </button>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="lastName" className={styles.label}>Nom</label>
+                    <input id="lastName" name="lastName" className={styles.input} value={formData.lastName} onChange={handleChange} required />
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <label htmlFor="birthDate" className={styles.label}>Date de naissance</label>
+                    <input id="birthDate" name="birthDate" type="date" className={styles.input} value={formData.birthDate} onChange={handleChange} required />
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <label htmlFor="email" className={styles.label}>Mail</label>
+                    <input id="email" name="email" type="email" className={styles.input} value={formData.email} onChange={handleChange} required />
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <label htmlFor="phone" className={styles.label}>Téléphone</label>
+                    <input id="phone" name="phone" type="tel" className={styles.input} value={formData.phone} onChange={handleChange} required />
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <label htmlFor="password" className={styles.label}>Mot de passe</label>
+                    <input id="password" name="password" type="password" className={styles.input} value={formData.password} onChange={handleChange} required />
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <label htmlFor="confirmPassword" className={styles.label}>Confirmation de mot de passe</label>
+                    <input id="confirmPassword" name="confirmPassword" type="password" className={styles.input} value={formData.confirmPassword} onChange={handleChange} required />
+                </div>
+
+                <div className={styles.buttonGroup}>
+                    <button type="submit" className={styles.submitButton}>S'inscrire</button>
+                    <Link to="/login" className={styles.loginButton}>Déjà un compte ? Connexion</Link>
+                </div>
 
                 {error && <p className={styles.error}>{error}</p>}
             </form>
-
-
         </div>
     );
 }

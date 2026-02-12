@@ -1,27 +1,37 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
 import { useAuth } from '../auth/AuthContext';
 import styles from './LoginPage.module.css';
 
+function getErrorMessage(error: unknown): string {
+    if (error instanceof Error && error.message) {
+        return error.message;
+    }
+
+    return 'Login failed';
+}
+
 export default function LoginPage() {
-    const nav = useNavigate();
+    const navigate = useNavigate();
     const { refresh } = useAuth();
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
 
-    const onSubmit = async (e: FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         setError(null);
+
         try {
             await login(username, password);
             await refresh();
-            nav('/events');
-        } catch (err: any) {
-            console.error("LOGIN ERROR:", err);
-            setError(err?.message || "Login failed");
+            navigate('/profile', { state: { source: 'login' } });
+        } catch (submitError: unknown) {
+            console.error('LOGIN ERROR:', submitError);
+            setError(getErrorMessage(submitError));
         }
     };
 
@@ -35,24 +45,28 @@ export default function LoginPage() {
 
             <form onSubmit={onSubmit} className={styles.form}>
                 <div className={styles.inputGroup}>
-                    <label className={styles.label}>Email / Numéro de téléphone</label>
+                    <label htmlFor="username" className={styles.label}>
+                        Email / Numéro de téléphone
+                    </label>
                     <input
+                        id="username"
                         className={styles.input}
                         value={username}
-                        onChange={e => setUsername(e.target.value)}
-                        placeholder=""
+                        onChange={(event) => setUsername(event.target.value)}
                         required
                     />
                 </div>
 
                 <div className={styles.inputGroup}>
-                    <label className={styles.label}>Mot de passe</label>
+                    <label htmlFor="password" className={styles.label}>
+                        Mot de passe
+                    </label>
                     <input
+                        id="password"
                         className={styles.input}
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        placeholder=""
                         type="password"
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
                         required
                     />
                 </div>
@@ -71,4 +85,3 @@ export default function LoginPage() {
         </div>
     );
 }
-

@@ -2,47 +2,36 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 50px var(--spacing-md);
     min-height: calc(100vh - 80px);
-    font-family: var(--font-sans);
+    padding-top: 50px;
+    font-family: 'Outfit', 'Inter', sans-serif;
 }
 
 .backLink {
     align-self: flex-start;
-    margin-bottom: 60px;
-    text-decoration: none;
-    color: var(--color-dark);
-    font-size: 1.1rem;
     display: flex;
     align-items: center;
     gap: 5px;
-    transition: opacity var(--transition-fast);
-}
-
-.backLink:hover {
-    opacity: 0.7;
+    margin-left: 40px;
+    margin-bottom: 80px;
+    color: #000;
+    font-size: 1.1rem;
+    text-decoration: none;
 }
 
 .title {
+    margin-bottom: 40px;
+    color: #000;
     font-size: 4rem;
     font-weight: 500;
-    margin-bottom: 40px;
-    color: var(--color-dark);
-    text-align: center;
 }
 
 .form {
     display: flex;
     flex-direction: column;
-    gap: 30px;
-    width: 100%;
-    max-width: 800px;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 25px;
+    width: 100%;
+    max-width: 400px;
 }
 
 .inputGroup {
@@ -52,58 +41,75 @@
 }
 
 .label {
+    color: #000;
     font-size: 1.1rem;
-    color: var(--color-dark);
 }
 
 .input {
-    background-color: #D9D9D9;
+    width: 100%;
+    padding: 15px 20px;
     border: none;
     border-radius: 12px;
-    padding: 15px 20px;
-    font-size: 1rem;
     outline: none;
-    width: 100%;
-    font-family: var(--font-sans);
+    background-color: #d9d9d9;
+    font-size: 1rem;
 }
 
-.input:focus {
-    background-color: #cfcfcf;
+.buttonGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.submitButton,
+.loginButton {
+    width: fit-content;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 30px;
+    color: #000;
+    font-size: 1.1rem;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .submitButton {
-    background-color: #B29B9B;
-    color: var(--color-dark);
-    border: none;
-    border-radius: 8px;
-    padding: 12px 40px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    width: fit-content;
-    margin: 20px auto 0;
+    background-color: #b29b9b;
 }
 
 .submitButton:hover {
     background-color: #a38989;
 }
 
+.loginButton {
+    background-color: #f8d7da;
+}
+
+.loginButton:hover {
+    background-color: #f1c1c5;
+}
+
 .error {
-    color: #cc0000;
-    margin-top: 15px;
+    margin-top: 10px;
+    color: crimson;
     text-align: center;
 }
 
 @media (max-width: 768px) {
-    .grid {
-        grid-template-columns: 1fr;
+    .registerContainer {
+        padding: 20px;
+    }
+
+    .backLink {
+        margin-left: 0;
+        margin-bottom: 40px;
     }
 
     .title {
         font-size: 3rem;
-    }
-
-    .registerContainer {
-        padding-top: 30px;
     }
 }
